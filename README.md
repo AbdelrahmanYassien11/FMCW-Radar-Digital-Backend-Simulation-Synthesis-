@@ -1,4 +1,12 @@
-# FMCW Radar Digital Back-End – Python Reference Model
+<p align="center">
+  <img src="https://img.shields.io/badge/FPGA-6B2B44?style=for-the-badge&logo=FPGA&logoColor=white" />
+  <img src="https://img.shields.io/badge/Verilog-AA1745?style=for-the-badge&logo=verilog&logoColor=white" />
+  <img src="https://img.shields.io/badge/UVM-FF6A21?style=for-the-badge&logo=uvm&logoColor=white" />
+  <img src="https://img.shields.io/badge/SVA-5A47FF?style=for-the-badge&logo=sva&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3B36E9?style=for-the-badge&logo=gnu&logoColor=white" />
+</p>
+
+<h1 align="center" style="color:#6B2B44;">🔎 UFMCW Radar Digital Back-End – Python Reference Model 🔎</h1>
 
 This project focuses on the design and implementation of a **digital back-end (DBE) for an FMCW radar system**.  
 The final objective is to build, simulate, and and synthesize the digital signal processing chain used for **range estimation** in FMCW radar.
@@ -183,3 +191,64 @@ Algorithm validation
 RTL verification
 
 Hardware testing
+
+# Block Level Diagram
+==================== FMCW Radar Digital Back-End ====================
+
+        ┌───────────────┐
+        │  Chirp Signal │
+        │   Generator   │
+        └───────┬───────┘
+                │ Tx Chirp
+                ▼
+        ┌───────────────┐
+        │   Target &    │
+        │ Channel Model │
+        │ (Delay + Att) │
+        └───────┬───────┘
+                │ Rx Signal
+                ▼
+        ┌───────────────┐
+        │   Mixer /     │
+        │ Dechirping    │
+        └───────┬───────┘
+                │ IF Signal
+                ▼
+        ┌───────────────┐
+        │   Low-Pass    │
+        │    Filter     │
+        └───────┬───────┘
+                │ Beat Signal
+                ▼
+        ┌───────────────┐
+        │      ADC      │
+        │ (Sampling &   │
+        │ Quantization) │
+        └───────┬───────┘
+                │ Digital Samples
+                ▼
+        ┌───────────────┐
+        │     Window    │
+        │  (Hann/Hamming│
+        │    or Blackman│
+        └───────┬───────┘
+                │
+                ▼
+        ┌───────────────┐
+        │      FFT      │
+        │  (Range FFT)  │
+        └───────┬───────┘
+                │
+                ▼
+        ┌───────────────┐
+        │  Magnitude &  │
+        │ Power Spectrum│
+        └───────┬───────┘
+                │
+                ▼
+        ┌───────────────┐
+        │ Peak Detection│
+        │ & Range Est.  │
+        └───────────────┘
+
+====================================================================
