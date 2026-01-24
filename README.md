@@ -1,37 +1,49 @@
 # FMCW Radar Digital Back-End – Python Reference Model
 
 This project focuses on the design and implementation of a **digital back-end (DBE) for an FMCW radar system**.  
-The final objective is to build, simulate, and synthesize the digital signal processing chain used for range estimation in FMCW radar.
+The final objective is to build, simulate, and and synthesize the digital signal processing chain used for **range estimation** in FMCW radar.
 
-The current stage of the project implements a **Python reference model** that serves as a golden model for future RTL and hardware implementation.
+The current stage of the project implements a **Python reference (golden) model** that will later be used as a reference for RTL and hardware implementation.
 
 ---
 
 ## 🎯 Project Objectives
 
-- Develop a mathematical and digital model of an FMCW radar signal chain
-- Build a Python reference implementation for verification
-- Later map the algorithm to:
-  - RTL design (Verilog/SystemVerilog)
-  - Simulation and verification
-  - Synthesis / FPGA implementation
+- Develop a mathematical and digital model of an FMCW radar signal chain  
+- Build a Python reference implementation for algorithm verification  
+- Model realistic radar effects (noise, ADC quantization, windowing)  
+- Perform FFT-based range estimation and peak detection  
+- Export ADC samples for future RTL testbench and verification  
+
+Later phases of the project will map the algorithm to:
+- RTL design (Verilog/SystemVerilog)  
+- Simulation and verification  
+- Synthesis / FPGA implementation  
 
 ---
 
 ## 📌 Current Status (Python Modeling Phase)
 
 Implemented so far:
-- FMCW radar parameter definition
-- Chirp slope derivation
-- Baseband FMCW transmit chirp generation
-- Time-domain signal modeling
 
-Upcoming steps:
-- Target delay modeling
-- Mixer (beat signal) generation
-- FFT-based range estimation
-- ADC sample export
-- Noise and multiple target modeling
+- FMCW radar parameter definition  
+- Chirp slope derivation  
+- Baseband FMCW transmit chirp generation  
+- Two-target echo modeling with round-trip delay  
+- Mixer (beat signal) generation  
+- Additive noise modeling  
+- ADC quantization (fixed-point model)  
+- Windowing (Hann window)  
+- FFT-based range estimation  
+- Peak detection for multiple targets  
+- Export of ADC I/Q samples to file  
+
+Outputs generated:
+- Time-domain chirp plots  
+- Beat signal plot  
+- Range profile plot  
+- Range profile with detected peaks  
+- `adc_samples.txt` for RTL testbench input  
 
 ---
 
@@ -44,30 +56,63 @@ f(t) = f_0 + S t
 \]
 
 where:
-- \( f_0 \) is the carrier frequency
-- \( S = \frac{B}{T_{chirp}} \) is the chirp slope
-- \( B \) is bandwidth
-- \( T_{chirp} \) is chirp duration
+- \( f_0 \) is the carrier frequency  
+- \( S = \frac{B}{T_{chirp}} \) is the chirp slope  
+- \( B \) is bandwidth  
+- \( T_{chirp} \) is chirp duration  
 
-The baseband transmit signal is given by:
+The baseband transmit signal is:
 
 \[
 s_{tx}(t) = e^{j\pi S t^2}
 \]
 
-Target range introduces a round-trip delay:
+A target at range \( R \) introduces a round-trip delay:
 
 \[
 \tau = \frac{2R}{c}
 \]
 
-which leads to a beat frequency after mixing:
+After mixing the transmitted and received signals, a beat frequency is produced:
 
 \[
 f_b = \frac{2SR}{c}
 \]
 
-This beat frequency is used to estimate target range using FFT.
+This beat frequency is proportional to the target range and is extracted using an FFT:
+
+\[
+R = \frac{c}{2S} f_b
+\]
+
+Multiple targets produce multiple beat frequencies, resulting in multiple peaks in the FFT-based range profile.
+
+---
+
+## 🔁 Signal Processing Chain (Current Implementation)
+
+The current Python model implements the following pipeline:
+
+TX Chirp Generation
+↓
+Target Echo Modeling (Two Targets + Delay)
+↓
+Mixer (Beat Signal)
+↓
+Add Noise
+↓
+ADC Quantization (12-bit model)
+↓
+Windowing (Hann window)
+↓
+FFT (Range Estimation)
+↓
+Peak Detection
+↓
+Export ADC Samples
+
+
+This pipeline closely matches a real FMCW radar digital back-end.
 
 ---
 
@@ -79,7 +124,7 @@ Install dependencies using:
 pip install -r requirements.txt
 ```
 
-## 🐍 Virtual Environment Setup
+🐍 Virtual Environment Setup
 
 It is recommended to use a Python virtual environment.
 
@@ -90,3 +135,51 @@ python -m venv venv
 source venv/bin/activate   # Linux/macOS
 venv\Scripts\activate      # Windows
 ```
+
+▶️ How to Run
+python fmcw_model.py
+
+# This will generate:
+
+Plots in the project directory
+adc_samples.txt containing quantized I/Q samples
+
+# 📂 Generated Files
+
+tx_chirp_time.png
+
+tx_chirp_frequency.png
+
+beat_signal_time.png
+
+range_profile_two_targets.png
+
+range_profile_peaks.png
+
+adc_samples.txt
+
+# 🚀 Future Work
+
+Planned next stages of the project include:
+
+Fixed-point optimization and bit-width analysis
+
+CFAR detection
+
+Doppler processing (2D FFT)
+
+RTL implementation of mixer, FFT, and peak detector
+
+Verification against Python golden model
+
+FPGA synthesis and timing analysis
+
+# 📖 Notes
+
+This Python model serves as a golden reference for the FMCW radar digital back-end and will be used for:
+
+Algorithm validation
+
+RTL verification
+
+Hardware testing

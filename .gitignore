@@ -1,0 +1,6 @@
+fmcw_python_model/*
+!fmcw_python_model/*.py
+!fmcw_python_model/*.txt
+
+.*
+!.gitignore
